@@ -5,7 +5,7 @@ export const send = mutation({
     args: {
         conversationId: v.id("conversations"),
         content: v.string(),
-        type: v.union(v.literal("text"), v.literal("image")),
+        type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
@@ -121,11 +121,14 @@ export const getTyping = query({
     },
 });
 
-export const generateUploadUrl = mutation(async (ctx) => {
-    return await ctx.storage.generateUploadUrl();
+export const generateUploadUrl = mutation({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.storage.generateUploadUrl();
+    },
 });
 
-export const getImageUrl = query({
+export const getFileUrl = query({
     args: { storageId: v.string() },
     handler: async (ctx, args) => {
         return await ctx.storage.getUrl(args.storageId);

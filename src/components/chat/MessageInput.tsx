@@ -94,11 +94,14 @@ export default function MessageInput({ conversationId }: { conversationId: Id<"c
 
             const { storageId } = await result.json();
 
-            // 3. Send the message with the storageId
+            // 3. Detect type
+            const isImage = file.type.startsWith("image/");
+
+            // 4. Send the message with the storageId
             await sendMessage({
                 conversationId,
                 content: storageId,
-                type: "image",
+                type: isImage ? "image" : "file",
             });
 
             if (fileInputRef.current) fileInputRef.current.value = "";

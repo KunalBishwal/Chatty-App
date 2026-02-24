@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Loader2, MoreVertical, Reply, Smile, Trash2, User } from "lucide-react";
+import { ChevronDown, Download, File, Loader2, MoreVertical, Reply, Smile, Trash2, User } from "lucide-react";
 
 function ImageContent({ storageId }: { storageId: string }) {
-    const imageUrl = useQuery(api.messages.getImageUrl, { storageId });
+    const imageUrl = useQuery(api.messages.getFileUrl, { storageId });
 
     if (!imageUrl) {
         return (
@@ -27,6 +27,38 @@ function ImageContent({ storageId }: { storageId: string }) {
             className="max-w-[300px] max-h-[400px] rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => window.open(imageUrl, "_blank")}
         />
+    );
+}
+
+function FileContent({ storageId }: { storageId: string }) {
+    const fileUrl = useQuery(api.messages.getFileUrl, { storageId });
+
+    if (!fileUrl) {
+        return (
+            <div className="flex items-center gap-2 p-3 bg-slate-800/50 rounded-lg animate-pulse min-w-[200px]">
+                <Loader2 className="w-5 h-5 text-cyan-500 animate-spin" />
+                <div className="h-4 w-24 bg-slate-700 rounded" />
+            </div>
+        );
+    }
+
+    return (
+        <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-3 bg-slate-900/50 hover:bg-slate-900 border border-white/10 rounded-xl group/file transition-all min-w-[200px]"
+        >
+            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover/file:bg-cyan-500 group-hover/file:text-white transition-colors">
+                <File className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col">
+                <span className="text-xs font-bold text-slate-200">Shared File</span>
+                <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                    <Download className="w-3 h-3" /> Click to download
+                </span>
+            </div>
+        </a>
     );
 }
 
@@ -183,6 +215,8 @@ export default function MessageList({ messages, currentUserId, conversationId, c
                                             <>
                                                 {message.type === "image" ? (
                                                     <ImageContent storageId={message.content} />
+                                                ) : message.type === "file" ? (
+                                                    <FileContent storageId={message.content} />
                                                 ) : (
                                                     <RichMessageContent content={message.content} />
                                                 )}

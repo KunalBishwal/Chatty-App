@@ -39,7 +39,7 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     senderId: v.string(), // Clerk userId
     content: v.string(),
-    type: v.union(v.literal("text"), v.literal("image")),
+    type: v.union(v.literal("text"), v.literal("image"), v.literal("file")),
     isDeleted: v.boolean(),
     reactions: v.optional(v.array(v.object({
       emoji: v.string(),
