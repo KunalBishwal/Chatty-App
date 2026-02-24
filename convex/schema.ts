@@ -9,13 +9,21 @@ export default defineSchema({
     imageUrl: v.string(),
     isOnline: v.boolean(),
     lastSeen: v.number(),
-  }).index("by_token", ["tokenIdentifier"]),
+  })
+    .index("by_token", ["tokenIdentifier"])
+    .searchIndex("search_name", { searchField: "name" }),
 
   conversations: defineTable({
     participants: v.array(v.string()), // store userIds
     isGroup: v.boolean(),
     name: v.optional(v.string()),
     lastMessageId: v.optional(v.id("messages")),
+    lastMessage: v.optional(v.object({
+      content: v.string(),
+      senderId: v.string(),
+      _creationTime: v.number(),
+      isDeleted: v.boolean(),
+    })),
   }).index("by_participants", ["participants"]),
 
   userConversations: defineTable({

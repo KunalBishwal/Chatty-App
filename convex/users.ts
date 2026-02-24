@@ -59,13 +59,18 @@ export const listAll = query({
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) return [];
 
-        const users = await ctx.db.query("users").collect();
+        let users;
+        if (args.search) {
+            users = await ctx.db
+                .query("users")
+                .withSearchIndex("search_name", (q) => q.search("name", args.search!))
+                .collect();
+        } else {
+            users = await ctx.db.query("users").collect();
+        }
 
-        // Filter out the current user and filter by search query if provided
-        return users.filter((user) =>
-            user.tokenIdentifier !== identity.tokenIdentifier &&
-            (!args.search || user.name.toLowerCase().includes(args.search.toLowerCase()))
-        );
+        // Filter out the current user
+        return users.filter((user) => user.tokenIdentifier !== identity.tokenIdentifier);
     },
 });
 

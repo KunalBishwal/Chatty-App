@@ -108,20 +108,10 @@ export const list = query({
             const conversation = await ctx.db.get(uc.conversationId);
             if (!conversation) continue;
 
-            let lastMessage = null;
-            if (conversation.lastMessageId) {
-                lastMessage = await ctx.db.get(conversation.lastMessageId);
-            }
-
             results.push({
                 ...conversation,
                 unreadCount: uc.unreadCount,
-                lastMessage: lastMessage ? {
-                    content: lastMessage.content,
-                    senderId: lastMessage.senderId,
-                    _creationTime: lastMessage._creationTime,
-                    isDeleted: lastMessage.isDeleted,
-                } : null,
+                // lastMessage is now denormalized on the conversation object
             });
         }
 

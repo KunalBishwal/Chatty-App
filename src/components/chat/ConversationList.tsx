@@ -39,6 +39,7 @@ export default function ConversationList({ conversations }: { conversations: any
                             conversation={conversation}
                             currentUserId={userId!}
                             isActive={conversationId === conversation._id}
+                            allUsers={allUsers}
                         />
                     ))}
                 </div>
@@ -85,12 +86,12 @@ export default function ConversationList({ conversations }: { conversations: any
     );
 }
 
-function ConversationItem({ conversation, currentUserId, isActive }: {
+function ConversationItem({ conversation, currentUserId, isActive, allUsers }: {
     conversation: any,
     currentUserId: string,
-    isActive: boolean
+    isActive: boolean,
+    allUsers: any[] | undefined
 }) {
-    const allUsers = useQuery(api.users.listAll, { search: "" });
 
     if (conversation.isGroup) {
         return (

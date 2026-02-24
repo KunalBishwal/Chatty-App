@@ -6,8 +6,56 @@ import { formatTimestamp } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "convex/_generated/api";
-import { ChevronDown, Loader2, Trash2, User } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Loader2, MoreVertical, Reply, Smile, Trash2, User } from "lucide-react";
+
+function ImageContent({ storageId }: { storageId: string }) {
+    const imageUrl = useQuery(api.messages.getImageUrl, { storageId });
+
+    if (!imageUrl) {
+        return (
+            <div className="w-64 h-48 bg-slate-800 animate-pulse rounded-lg flex items-center justify-center">
+                <Loader2 className="w-6 h-6 text-cyan-500 animate-spin" />
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={imageUrl}
+            alt="Shared image"
+            className="max-w-[300px] max-h-[400px] rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => window.open(imageUrl, "_blank")}
+        />
+    );
+}
+
+function RichMessageContent({ content }: { content: string }) {
+    // Basic URL detection regex
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = content.split(urlRegex);
+
+    return (
+        <span className="whitespace-pre-wrap break-words">
+            {parts.map((part, i) => {
+                if (part.match(urlRegex)) {
+                    return (
+                        <a
+                            key={i}
+                            href={part}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-cyan-300 underline hover:text-cyan-100 transition-colors"
+                        >
+                            {part}
+                        </a>
+                    );
+                }
+                return part;
+            })}
+        </span>
+    );
+}
 
 export default function MessageList({ messages, currentUserId, conversationId, currentUser }: {
     messages: any[] | undefined,
@@ -85,7 +133,7 @@ export default function MessageList({ messages, currentUserId, conversationId, c
                         <p className="text-sm">Be the first to say hello! 👋</p>
                     </motion.div>
                 ) : (
-                    messages.map((message, index) => {
+                    messages.map((message) => {
                         const isSender = message.senderId === currentUserId;
                         const sender = isSender ? currentUser : allUsers?.find(u => u.tokenIdentifier === message.senderId);
 
@@ -133,7 +181,11 @@ export default function MessageList({ messages, currentUserId, conversationId, c
                                             <span className="italic opacity-60 text-xs">This message was deleted</span>
                                         ) : (
                                             <>
-                                                <span className="whitespace-pre-wrap">{message.content}</span>
+                                                {message.type === "image" ? (
+                                                    <ImageContent storageId={message.content} />
+                                                ) : (
+                                                    <RichMessageContent content={message.content} />
+                                                )}
 
                                                 {/* Reaction Picker Overlay */}
                                                 <div className={cn(

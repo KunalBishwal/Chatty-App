@@ -19,9 +19,15 @@ export const send = mutation({
             isDeleted: false,
         });
 
-        // Update the conversation's last message ID
+        // Update the conversation's last message ID and denormalized preview
         await ctx.db.patch(args.conversationId, {
             lastMessageId: messageId,
+            lastMessage: {
+                content: args.content,
+                senderId: identity.tokenIdentifier,
+                _creationTime: Date.now(), // approximation for creation time
+                isDeleted: false,
+            },
         });
 
         // Increment unread counts for other participants
@@ -115,6 +121,17 @@ export const getTyping = query({
     },
 });
 
+export const generateUploadUrl = mutation(async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+});
+
+export const getImageUrl = query({
+    args: { storageId: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.storage.getUrl(args.storageId);
+    },
+});
+
 export const remove = mutation({
     args: { id: v.id("messages") },
     handler: async (ctx, args) => {
@@ -127,6 +144,17 @@ export const remove = mutation({
         }
 
         await ctx.db.patch(args.id, { isDeleted: true });
+
+        // Update denormalized lastMessage if this was the last message
+        const conversation = await ctx.db.get(message.conversationId);
+        if (conversation && conversation.lastMessageId === args.id) {
+            await ctx.db.patch(message.conversationId, {
+                lastMessage: {
+                    ...conversation.lastMessage!,
+                    isDeleted: true,
+                }
+            });
+        }
     },
 });
 

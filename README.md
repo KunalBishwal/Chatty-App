@@ -11,18 +11,11 @@ A premium, full-stack real-time chat application built with Next.js, Convex, and
 - **Typing Indicators**: Pulsing "Alex is typing..." animations that fade after 2 seconds.
 - **Unread Tracking**: Real-time badges for unread messages that clear automatically.
 
-### Advanced Chat Experience
-- **Group Chats**: Create multi-user conversations with custom names and member counts.
-- **Smart Scrolling**: Intelligent auto-scroll with a "New Messages" snap button.
-- **Reactions**: Interactive emoji reactions with live counts.
-- **Soft Deletes**: Ability to delete own messages (replaces content with "This message was deleted").
-- **Timestamps**: Context-aware formatting (e.g., Today: 2:34 PM, Older: Feb 15, 2:34 PM).
-
-### UI/UX & Design
-- **Premium Interface**: Modern glassmorphism design with distinct Cyan (Sender) and Slate (Receiver) bubbles.
-- **Responsive Layout**: Mobile-first design that hides the sidebar during active chats on small screens.
-- **Empty States**: Helpful placeholders for search results, empty chats, and new users.
-- **Loading States**: Integrated skeleton loaders and spinners for a smooth data transition.
+### Enterprise-Grade Optimizations
+- **High-Performance Search**: convex **Search Indexes** for O(log N) user discovery.
+- **Instant Sidebar Rendering**: Denormalized `lastMessage` data for O(1) conversation listing (N+1 Refactor).
+- **Real Media Sharing**: Real-time photo sharing powered by **Convex File Storage**.
+- **Interactive Links**: Automated URL detection and clickable link rendering.
 
 ## 🛠 Tech Stack
 

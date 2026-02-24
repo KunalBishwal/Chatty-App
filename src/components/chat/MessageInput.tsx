@@ -72,10 +72,41 @@ export default function MessageInput({ conversationId }: { conversationId: Id<"c
         setShowEmojiPicker(false);
     };
 
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const generateUploadUrl = useMutation(api.messages.generateUploadUrl);
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            alert("File upload feature coming soon! (Mocking photo selection)");
+        if (!file) return;
+
+        setIsSending(true);
+        setError(null);
+
+        try {
+            // 1. Get a short-lived upload URL
+            const postUrl = await generateUploadUrl();
+
+            // 2. POST the file to the URL
+            const result = await fetch(postUrl, {
+                method: "POST",
+                headers: { "Content-Type": file.type },
+                body: file,
+            });
+
+            const { storageId } = await result.json();
+
+            // 3. Send the message with the storageId
+            await sendMessage({
+                conversationId,
+                content: storageId,
+                type: "image",
+            });
+
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        } catch (err) {
+            console.error("Upload error:", err);
+            setError("Failed to upload image");
+        } finally {
+            setIsSending(false);
         }
     };
 
