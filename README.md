@@ -1,6 +1,6 @@
-# TARS Chat Application
+Chatty Application
 
-A premium, full-stack real-time chat application built with Next.js, Convex, and Clerk. This project was developed as part of the Tars Fullstack Engineer Internship Coding Challenge 2026.
+A premium, full-stack real-time chat application built with Next.js, Convex, and Clerk.
 
 ## 🚀 Features
 
